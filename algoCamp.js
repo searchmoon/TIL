@@ -110,3 +110,82 @@ function solution(numbers) {
 
   return +numbers;
 }
+
+// 문제 4. 두 수의 합
+// https://school.programmers.co.kr/learn/courses/30/lessons/181846
+
+// 풀이
+function solution(a, b) {
+  return String(BigInt(a) + BigInt(b));
+}
+
+// 문제 5. 무작위로 K개의 수 뽑기
+
+//풀이
+function solution(arr, k) {
+  const set = new Set(arr);
+  let newArr = [...set].slice(0, k);
+
+  while (newArr.length < k) {
+    newArr.push(-1);
+  }
+
+  return newArr;
+}
+
+// 문제 6. 안전한 PIN 번호 (4자리)
+// 문제 설명: 4자리의 숫자중 같은 숫자가 3개 이상 나오지 않는 안전한 PIN 번호 찾기
+// 실행 예시:
+// console.log(solution2("0000")); // false
+// console.log(solution2("1133")); // true
+// console.log(solution2("1234")); // true
+
+// 풀이 1. Map 생성자 사용
+function solution(pin) {
+  const map = new Map();
+  const charArr = pin.split("");
+
+  let answer = true;
+
+  charArr.map((item) => {
+    if (!map.get(item)) {
+      map.set(item, 1);
+    } else {
+      map.set(item, map.get(item) + 1);
+    }
+  });
+
+  for (const value of map.values()) {
+    if (value >= 3) {
+      return false;
+    }
+  }
+
+  return answer;
+}
+
+//풀이 2. 객체를 사용한 방식
+function solution(pin) {
+  const countObj = {};
+
+  for (let i = 0; i < pin.length; i++) {
+    countObj[pin[i]] = (countObj[pin[i]] || 0) + 1;
+    if (countObj[pin[i]] >= 3) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//풀이 3. reduce, some, split 등의 메서드를 사용한 방식
+function solution(pin) {
+  const count = pin.split("").reduce((acc, digit) => {
+    acc[digit] = (acc[digit] || 0) + 1;
+    console.log(acc);
+    return acc;
+  }, {});
+  console.log();
+
+  return !Object.values(count).some((v) => v >= 3);
+}
