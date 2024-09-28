@@ -189,3 +189,131 @@ function solution(pin) {
 
   return !Object.values(count).some((v) => v >= 3);
 }
+
+// 문제7. 캐릭터의 좌표
+// https://school.programmers.co.kr/learn/courses/30/lessons/120861
+// 풀이1.
+function solution(keyinput, board) {
+  let x = 0;
+  let y = 0;
+  const maxX = Math.floor(board[0] / 2);
+  const maxY = Math.floor(board[1] / 2);
+
+  for (let i = 0; i < keyinput.length; i++) {
+    if (keyinput[i] === "left") {
+      if (x > -maxX) x--;
+    } else if (keyinput[i] === "right") {
+      if (x < maxX) x++;
+    } else if (keyinput[i] === "up") {
+      if (y < maxY) y++;
+    } else if (keyinput[i] === "down") {
+      if (y > -maxY) y--;
+    }
+  }
+
+  return [x, y];
+}
+
+//풀이2. switch 문을 이용한 풀이
+function solution(keyinput, board) {
+  let res = [0, 0];
+  const maxX = Math.floor(board[0] / 2);
+  const maxY = Math.floor(board[1] / 2);
+  for (let p of keyinput) {
+    switch (p) {
+      case "left":
+        if (res[0] > -maxX) res[0]--;
+        break;
+      case "right":
+        if (res[0] < maxX) res[0]++;
+        break;
+      case "up":
+        if (res[1] < maxY) res[1]++;
+        break;
+      case "down":
+        if (res[1] > -maxY) res[1]--;
+        break;
+    }
+  }
+  return res;
+}
+
+// 문제 8. 저주의 숫자 3
+// https://school.programmers.co.kr/learn/courses/30/lessons/120871
+// 풀이 1.
+function solution(n) {
+  let count = 0;
+  let num = 0;
+
+  while (count < n) {
+    num++;
+
+    if (num % 3 !== 0 && !String(num).includes("3")) {
+      count++;
+    }
+  }
+
+  return num;
+}
+
+// 문제9. url 라우트 매칭 및 파라미터 추출하기
+//풀이 1.
+function solution3(route, path) {
+  let answer = { matches: true, params: {} };
+  const routeArr = route.split("/");
+  const pathArr = path.split("/");
+
+  for (let i = 1; i < routeArr.length; i += 2) {
+    if (routeArr[i] !== pathArr[i]) {
+      answer = { matches: false };
+      return answer;
+    }
+  }
+
+  for (let i = 2; i < routeArr.length; i += 2) {
+    answer.params[routeArr[i].slice(1, -1)] = pathArr[i];
+  }
+
+  return answer;
+}
+
+//풀이 2.
+function solution(route, path) {
+  let answer = { matches: true, params: {} };
+  const routeArr = route.split("/");
+  const pathArr = path.split("/");
+
+  if (routeArr.length !== pathArr.length) {
+    return { matches: false };
+  }
+
+  for (let i = 0; i < routeArr.length; i++) {
+    if (routeArr[i].startsWith("[") && routeArr[i].endsWith("]")) {
+      const paramName = routeArr[i].slice(1, -1);
+      answer.params[paramName] = pathArr[i];
+    } else if (routeArr[i] !== pathArr[i]) {
+      return { matches: false };
+    }
+  }
+
+  return answer;
+}
+// 출력 예시
+// console.log(
+//   solution(
+//     "/service/[serviceId]/deployment/[deploymentId]",
+//     "/service/1/deployment/9"
+//   )
+// );
+// // 출력: {"matches":true,"params":{"serviceId":"1","deploymentId":"9"}}
+
+// console.log(
+//   solution(
+//     "/service/[serviceId]/deployment/[deploymentId]",
+//     "/service/1/project/9"
+//   )
+// );
+// // 출력: {"matches":false}
+
+// console.log(solution("/user/[userId]/profile", "/user/123/profile"));
+// // 출력: {"matches":true,"params":{"userId":"123"}}
