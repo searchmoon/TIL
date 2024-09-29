@@ -317,3 +317,101 @@ function solution(route, path) {
 
 // console.log(solution("/user/[userId]/profile", "/user/123/profile"));
 // // 출력: {"matches":true,"params":{"userId":"123"}}
+
+// 문제 10.
+
+const codeOwnersMap = {
+  scripts: ["김밥"],
+  services: {
+    "business-ledger": ["김연주", "백혜림"],
+    "toss-card": ["김연주", "문정은"],
+    payments: ["문정은"],
+  },
+};
+
+function solution(obj, path) {
+  const pathArr = path.split("/");
+  let copyObj = { ...obj };
+
+  for (let i = 0; i < pathArr.length; i++) {
+    copyObj = copyObj[pathArr[i]];
+  }
+
+  return copyObj;
+}
+
+/* 에시 실행 결과 */
+// solution(codeOwnersMap, "scripts");
+// // ['김밥']
+
+// solution(codeOwnersMap, "services/business-ledger");
+// // ["김연주", "백혜림"]
+
+// solution(codeOwnersMap, "services/payments");
+// // ['문정은']
+
+// solution(codeOwnersMap, "services/non-existent");
+
+// 문제 11.
+
+async function fetchExperts() {
+  return ["백혜림", "문정은", "김연주"];
+}
+
+async function fetchIsExpertOnline(name) {
+  const onlineExperts = { 백혜림: true, 문정은: false, 김연주: true };
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(onlineExperts[name]), Math.random() * 70 + 50);
+  });
+}
+
+async function solution3(fetchExperts, fetchIsExpertOnline) {
+  // 1. 전문가 목록을 받아옴
+  const experts = await fetchExperts();
+
+  // 2. 병렬로 각 전문가의 온라인 상태 확인 (Promise.all 사용)
+  const onlineStatuses = await Promise.all(
+    experts.map((expert) => fetchIsExpertOnline(expert))
+  );
+
+  // 3. 온라인 상태인 전문가만 필터링하여 반환
+  return experts.filter((expert, index) => onlineStatuses[index]);
+}
+
+// solution 함수 실행
+// solution3(fetchExperts, fetchIsExpertOnline).then(console.log);
+
+//문제 12.
+
+function parseSearch(search) {
+  let result = {};
+  let queryParamStr = search.split("?")[1];
+  if (!queryParamStr) return {};
+  const queryParamArr = queryParamStr.split("&");
+
+  for (let queryParam of queryParamArr) {
+    const key = queryParam.split("=")[0];
+    const value = queryParam.split("=")[1];
+    let tempValue = result[key];
+
+    if (!tempValue) {
+      result[key] = value;
+    } else {
+      if (Array.isArray(tempValue)) {
+        //배열일 경우
+        result[key] = [...tempValue, value];
+      } else {
+        // 배열이 아닐경우
+        result[key] = [tempValue, value];
+      }
+    }
+  }
+  return result;
+}
+
+console.log(parseSearch("")); //출력: {}
+console.log(parseSearch("?from=twitter")); //출력: {"from": "twitter"}
+console.log(parseSearch("?range=1&range=8")); //출력: {"range": ["1", "8"]}
+console.log(parseSearch("?from=facebook&from=ad")); //출력: {"from": ["facebook", "ad"]}
+console.log(parseSearch("?from=facebook&from=ad&from=cc")); //출력: {"from": ["facebook", "ad"]}
+console.log(parseSearch("?from=facebook&from=ad&age=18&age=33")); //출력: {"from": ["facebook", "ad"]}
