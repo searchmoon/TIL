@@ -409,9 +409,142 @@ function parseSearch(search) {
   return result;
 }
 
-console.log(parseSearch("")); //출력: {}
-console.log(parseSearch("?from=twitter")); //출력: {"from": "twitter"}
-console.log(parseSearch("?range=1&range=8")); //출력: {"range": ["1", "8"]}
-console.log(parseSearch("?from=facebook&from=ad")); //출력: {"from": ["facebook", "ad"]}
-console.log(parseSearch("?from=facebook&from=ad&from=cc")); //출력: {"from": ["facebook", "ad"]}
-console.log(parseSearch("?from=facebook&from=ad&age=18&age=33")); //출력: {"from": ["facebook", "ad"]}
+// console.log(parseSearch("")); //출력: {}
+// console.log(parseSearch("?from=twitter")); //출력: {"from": "twitter"}
+// console.log(parseSearch("?range=1&range=8")); //출력: {"range": ["1", "8"]}
+// console.log(parseSearch("?from=facebook&from=ad")); //출력: {"from": ["facebook", "ad"]}
+// console.log(parseSearch("?from=facebook&from=ad&from=cc")); //출력: {"from": ["facebook", "ad"]}
+// console.log(parseSearch("?from=facebook&from=ad&age=18&age=33")); //출력: {"from": ["facebook", "ad"]}
+
+// 문제 13. 배열 조각하기
+//https://school.programmers.co.kr/learn/courses/30/lessons/181893
+
+// 풀이 1. 배열을 자르는 방식
+function solution(arr, query) {
+  let answer = [...arr];
+
+  for (let i = 0; i < query.length; i++) {
+    if (i % 2 === 0) {
+      answer = answer.slice(0, query[i] + 1);
+    } else {
+      answer = answer.slice(query[i]);
+    }
+  }
+
+  return answer;
+}
+
+// 풀이 2. 인덱스의 범위를 추적하는 방식 (2번 방법이 더 효율적인 방식)
+function solution(arr, query) {
+  let startIdx = 0;
+  let endIdx = arr.length;
+
+  for (let i = 0; i < query.length; i++) {
+    if (i % 2 === 0) {
+      endIdx = startIdx + query[i] + 1;
+    } else {
+      startIdx = startIdx + query[i];
+    }
+  }
+
+  return arr.slice(startIdx, endIdx);
+}
+
+// 문제 14. 배열 만들기 2
+
+// 풀이 1. 재귀함수 사용한 풀이
+function solution(l, r) {
+  let answer = [];
+
+  function generate(num) {
+    if (r < num) return;
+
+    if (num >= l && num <= r) {
+      answer.push(num);
+    }
+
+    generate(num * 10 + 0);
+    generate(num * 10 + 5);
+  }
+
+  generate(5);
+
+  return answer.length > 0 ? answer.sort((a, b) => a - b) : [-1];
+}
+
+// 풀이 2. 반복문으로 1부터 이진수로 변환 후, 1을 5로 바꾸는 작업.
+function solution(l, r) {
+  let answer = [];
+
+  for (let i = 1; ; i++) {
+    let num = parseInt(i.toString(2).replace(/1/g, "5")); // 이진법으로 바꾼 후,
+
+    if (num > r) break;
+
+    if (num >= l) {
+      answer.push(num);
+    }
+  }
+
+  return answer.length > 0 ? answer : [-1];
+}
+
+function solution(polynomial) {
+  let xSum = 0;
+  let intSum = 0;
+  const allArr = polynomial.split(" + ");
+
+  for (let i = 0; i < allArr.length; i++) {
+    if (allArr[i].includes("x")) {
+      let indexOfX = allArr[i].indexOf("x");
+      if (indexOfX > 0) {
+        xSum += Number(allArr[i].slice(0, indexOfX));
+      } else if (indexOfX === 0) {
+        xSum += 1;
+      }
+    } else {
+      intSum += Number(allArr[i]);
+    }
+  }
+
+  let terms = [];
+
+  if (xSum !== 0) {
+    terms.push(xSum === 1 ? "x" : `${xSum}x`);
+  }
+
+  if (intSum !== 0) {
+    terms.push(`${intSum}`);
+  }
+
+  return terms.join(" + ") || "0";
+}
+
+// solution("3x + 7 + x"); // "4x + 7"
+// solution("x + x + x"); // "3x"
+
+// 문제 15. 유한소수 판별하기
+// https://school.programmers.co.kr/learn/courses/30/lessons/120878
+// 풀이
+function solution(a, b) {
+  function gcd(a, b) {
+    return b === 0 ? a : gcd(b, a % b);
+  }
+
+  const divisor = gcd(a, b);
+  a /= divisor;
+  b /= divisor;
+
+  let num = b;
+  while (num > 1) {
+    if (num % 2 === 0) {
+      num /= 2;
+    } else if (num % 5 === 0) {
+      num /= 5;
+    } else {
+      return 2;
+    }
+  }
+
+  return 1;
+}
