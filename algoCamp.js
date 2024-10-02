@@ -525,7 +525,7 @@ function solution(polynomial) {
 
 // 문제 15. 유한소수 판별하기
 // https://school.programmers.co.kr/learn/courses/30/lessons/120878
-// 풀이
+// 풀이 1.
 function solution(a, b) {
   function gcd(a, b) {
     return b === 0 ? a : gcd(b, a % b);
@@ -547,4 +547,55 @@ function solution(a, b) {
   }
 
   return 1;
+}
+
+// 풀이 2.
+function solution(a, b) {
+  // 최대공약수(GCD) 계산 함수
+  const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+
+  // 기약분수로 만들기
+  const divisor = gcd(a, b);
+  b /= divisor;
+
+  // 분모의 소인수 검사
+  while (b % 2 === 0) b /= 2;
+  while (b % 5 === 0) b /= 5;
+
+  // b가 1이면 유한소수, 아니면 무한소수
+  return b === 1 ? 1 : 2;
+}
+
+// 문제 16. OX퀴즈
+// https://school.programmers.co.kr/learn/courses/30/lessons/120907
+// 풀이1.
+function solution(quiz) {
+  let answer = [];
+
+  const quizArr = quiz.map((item) => {
+    return item.split(" = ");
+  });
+
+  quizArr.map((item) => {
+    let calc = new Function("return " + item[0])();
+    let correctCalc = calc === Number(item[1]) ? true : false;
+
+    if (correctCalc) {
+      answer.push("O");
+    } else if (!correctCalc) {
+      answer.push("X");
+    }
+  });
+
+  return answer;
+}
+
+// 풀이2. (조금 더 간단하다.)
+function solution(quiz) {
+  let answer = quiz.map((item) => {
+    const [left, right] = item.split(" = ");
+    let calcLeft = new Function("return " + left)();
+    return calcLeft == right ? "O" : "X";
+  });
+  return answer;
 }
