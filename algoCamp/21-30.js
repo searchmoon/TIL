@@ -2,19 +2,19 @@
 // https://school.programmers.co.kr/learn/courses/30/lessons/12931
 // 풀이 1.
 function solution(n) {
-    let answer= 0;
-    
-    for(let char of String(n)){
-        answer += Number(char);
-    }
+  let answer = 0;
 
-    return answer;
+  for (let char of String(n)) {
+    answer += Number(char);
+  }
+
+  return answer;
 }
 
 //풀이 2. 인자를 문자열로 변환 후, 하나씩 잘라서 배열에 담기 -> reduce 를 사용해서 더해준 값 반환.
-function solution(n){
-    const arr = (n+"").split("");
-    return arr.reduce((sum, crr) => sum += Number(crr), 0);
+function solution(n) {
+  const arr = (n + "").split("");
+  return arr.reduce((sum, crr) => (sum += Number(crr)), 0);
 }
 
 // solution(123) // 6
@@ -25,16 +25,86 @@ function solution(n){
 
 // 풀이 1. Array().fill() 사용해서, 미리 배열의 모양을 만들어주고, map 으로 계산해준다.
 function solution(x, n) {
-    return Array(n).fill(x).map((v, i) => (i + 1) * v)
+  return Array(n)
+    .fill(x)
+    .map((v, i) => (i + 1) * v);
 }
 // 풀이 2. 기본 문법
 function solution(x, n) {
-    let answer = [];
-    
-    for(let i = 1; i <= n; i++){
-        answer.push(x * i);
+  let answer = [];
+
+  for (let i = 1; i <= n; i++) {
+    answer.push(x * i);
+  }
+
+  return answer;
+}
+
+// 문제 23. 나머지 한 점
+// https://school.programmers.co.kr/learn/courses/18/lessons/1878
+
+// 풀이1. 생성자 Map 을 이용한 풀이
+function solution(v) {
+  const Xmap = new Map();
+  const Ymap = new Map();
+
+  for (let i = 0; i < v.length; i++) {
+    Xmap.set(v[i][0], Xmap.get(v[i][0]) ? Xmap.get(v[i][0]) + 1 : 1);
+    Ymap.set(v[i][1], Ymap.get(v[i][1]) ? Ymap.get(v[i][1]) + 1 : 1);
+  }
+
+  const x = [...Xmap].find(([key, value]) => value === 1)[0];
+  const y = [...Ymap].find(([key, value]) => value === 1)[0];
+
+  return [x, y];
+}
+
+// 풀이2. 객체를 이용한 풀이
+function solution(v) {
+    const xMap = {};
+    const yMap = {};
+
+    for (let i = 0; i < v.length; i++) {
+        xMap[v[i][0]] = (xMap[v[i][0]] || 0) + 1;
+        yMap[v[i][1]] = (yMap[v[i][1]] || 0) + 1;
     }
 
-    return answer;
+    const x = Object.keys(xMap).find(key => xMap[key] === 1);
+    const y = Object.keys(yMap).find(key => yMap[key] === 1);
+
+    return [Number(x), Number(y)];
+}
+
+// 문제 24. 나누어 떨어지는 숫자 배열
+// https://school.programmers.co.kr/learn/courses/30/lessons/12910
+//풀이. filter를 이용한 풀이
+function solution(arr, divisor){
+    let answer = arr.filter(int => int % divisor === 0);
+    return answer.length === 0 ? [-1]: answer.sort((a, b) => a - b);
+}
+
+// 문제 25. 없는 숫자 더하기
+// https://school.programmers.co.kr/learn/courses/30/lessons/86051
+// 풀이
+
+function solution(numbers){
+    let answer = 0;
+    // 이부분은
+    let arr = [];
+    
+    for(let i = 0; i < 10; i++){
+        arr.push(i);
+    }
+    // 1. const arr = new Array(10).fill().map((_, i) => i);
+    // 2. const arr = [...Array(10).keys()]; 
+    // 이렇게 더 간단하게 작성할 수 도 있다.
+
+    for(let num of arr){
+        if(!numbers.includes(num)){
+            answer += num;
+        }
+    }
+
+ return answer;   
 }
 
