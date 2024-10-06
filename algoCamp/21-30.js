@@ -108,3 +108,39 @@ function solution(numbers){
  return answer;   
 }
 
+// 문제 26. 음양 더하기
+// https://school.programmers.co.kr/learn/courses/30/lessons/76501
+// 풀이
+function solution(absolutes, signs) {
+    let answer = 0;
+    for(let i = 0; i < absolutes.length; i++){
+        if(signs[i] === true) {
+            answer += absolutes[i];
+        } else {
+            answer -= absolutes[i];
+        }
+    }
+    return answer;
+}
+
+// 문제 27. 콜라츠 추측
+// https://school.programmers.co.kr/learn/courses/30/lessons/12943
+// 풀이
+function solution(num) {
+    let count = 0;
+    
+    while(num !== 1){
+        if(num%2 === 0){
+            num = num / 2;
+        } else {
+            num = num * 3 +1;
+        }
+        count ++;
+    }
+    
+    if (count >= 500) {
+        return -1;
+    } else {
+        return count;
+    }
+}
