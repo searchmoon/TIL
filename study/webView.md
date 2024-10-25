@@ -66,16 +66,76 @@ history.back 은 웹상에서 back 을 계속하다가, 돌아갈 페이지 가�
 
 이를 해결하기 위해 가장 간단한 방법은 앱스킴이 연달아 호출될때, 딜레이를 주는 방법이다.
 
-1. 프론트에서 알 수 없는 오류가 발생할때
+2. 프론트에서 알 수 없는 오류가 발생할때
 - 앱 네이티브와 자바스크립트 문자열 차이
     - 앱에서 웹뷰를 사용할때, 이 세개의 문자열을 조심해야한다.
     → ‘    “    \
     - 이것을 해결하기 위해서는 Encoding 또는 Escaping 하면된다. (Encoding 룰이 다른 경우도 있기 때문에 조심해야한다.)
     - 검색엔진에서는 white space를 + 로 인코딩 하는데, 제공되는 함수에 따라서 + 기호를 인코딩 하지 않는 경우도 있다. 인코딩 룰도 꼭 체크.
-1. 웹페이지가 하얗게 나온다.
+3. 웹페이지가 하얗게 나온다.
 - IOS에서는 `webViewWebContentProcessDidTerminate(_:)`
 구현이 필요하다.
     - 가장 쉬운법: reload()
     - 새로고침 횟수 제한
     - 에러 & 다시시도 UI
 - Android 에서는 `onRenderProcessGone()` 구현
+
+4. 웹페이지가 안열릴때,(검수환경에서는 절대 나오지 않던 에러환경이, 고객한테서 나온 경우)
+
+![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/b08e7419-4fd5-4a8b-9478-184d8f32f525/5780d59a-68d5-4b3b-b035-dd85d79d326d/image.png)
+
+이 예시는 웹 페이지 하나에 대한 쿠키가 엄청 긴 데이터가 저장되어 있었음. RFC 쿠키 스펙중에 쿠키 리밋이라는 것이 있는데, 4k 로 제한이 되어있었는데, 사용자가 어떠한 항목을 누를때 마다, 쿠키가 쌓여 4k 를 넘겨 웹페이지에 에러가 발생한 경우이다.
+앱에서는 해당 에러코드인 경우에는, 해당 쿠키를 삭제하고, 다시 새로 고침을 하게 하여 웹페이지를 문제 없이 방문할 수 있게 하였다.
+
+5. 캐시를 하지 않았는데, 새페이지가 안나오는 경우
+
+![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/b08e7419-4fd5-4a8b-9478-184d8f32f525/a5bb47d3-2f45-4bd4-be33-364007ef527e/image.png)
+
+이 웹페이지의 request, response 를 확인한 결과, 정말 캐시를 하지 않고있었다. 근데 특정 디바이스에서는 새페이지가 나오고, 특정 디바이스에서는 구페이지가 나왔다. 이유는, 1/10 만 캐시를 해주고 있었기 때문이었다.(휴리스틱 캐시. 브라우저 혹은 웹엔진에서 임의의 캐시를 진행하는것. RFC7234 라는 스펙으로 정의되어 있다.) 코드를 살펴보기. 이런 내용은 웹엔진과, 웹스펙을 조금만 공부하면 찾을 수 있는 내용이다.
+
+### 앱과 웹이 통신하는 법
+
+AppScheme
+
+[scheme]://[host]/[path]?[query]
+
+wooacon://webview/hello?year=2023
+
+|  | 앱스킴 | JS interface(웹) |
+| --- | --- | --- |
+| 호출길이 제한 | 보통 2000자-3000자 | 호출길이 제한 없음 |
+| URL 로딩 | URL 로딩 시도 | URL 로딩 시도하지 않음 |
+
+### Web 에서 App 으로 인터페이스 호출
+
+하는데에 있어서 parameter 를 넣을텐데,
+
+![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/b08e7419-4fd5-4a8b-9478-184d8f32f525/4bb2638f-77f3-4481-a086-e5307ff48369/image.png)
+
+앱스킴에서는 legacy parameter 가 문제 없겠지만,
+
+자바스크립트 인터페이스를 점점 더 많이 쓴다면, key-value parameter 를 더 쓰는것이 좋다.
+
+![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/b08e7419-4fd5-4a8b-9478-184d8f32f525/c7909000-868e-4080-acd2-2b9d5c77b452/image.png)
+
+ 이런 콜백함수는 XSS (cross site script)이슈가있을 수 있다. 이 콜백함수가 임의의 함수가 실행될수 있다는것은, 여기서 받을 수 있는 데이터를 갈취하거나, 다른 동작을 취할 수 있다는 뜻이기 때문에
+
+이런 형태의코드를 사용하고 있다면, 이런 콜백함수의 동적 정의를 제거하고, 사전 정의 형태로 바꾸는 것이 좋다.
+
+### App 에서 Web 으로 스크립트 호출
+
+![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/b08e7419-4fd5-4a8b-9478-184d8f32f525/d92a9741-4ccc-45e5-90a0-c4db876f1a12/image.png)
+
+### 앱에서 로그를 바로 보기
+
+Pulse 라는 오픈소스로 그것이 가능하다.
+
+https://github.com/kean/Pulse 에 들어가서 코드확인
+
+맥에서도 볼수 있다.
+
+### 앱에서 웹 인스펙터 보기
+
+https://github.com/liriliri/eruda
+
+이 오픈소스로 피씨의 인스펙터와 동일하게 요소를 하나씩 찝어서 볼수 있다.
