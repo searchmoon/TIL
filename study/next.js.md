@@ -10,11 +10,16 @@ use client 라고 선언을 해주고, 그 컴포넌트 내에서 사용되는 �
         - 백엔드 자원에(직접적으로) 접근
         - 민감한 정보를 서버에서 유지(JWT, API Key 등등)
         - large dependencies를 서버에서 유지/클라이언트 JS 번들 사이즈 감소
+        - 리액트 훅이나 기존 자바스크립트를 이용한 유저 상호작용(user interactions)은 구현할 수 없다.
     - Client component
         - interactivity, event listener(onClick 등)가 필요할때
         - state 및 라이프사이클이 필요할 때
-        - browser-only API 사용
         - custom hook depend on state or browser-only API 사용
+        - 클라이언트 컴포넌트는 클라이언트 사이드에서 렌더링 되기 때문에, 우리가 알고 있는 리액트의 모든 훅과 유저 상호작용이 가능하다.
 - client 컴포넌트는 최대한 트리구조에서 리프노드에 두는것이 좋다. 왜냐면, client로 선언하면, 그 아래의 컴포넌트들은 다 client 컴포넌트가 되기 때문에, interactive한 ui 만을 리프노드로써 client 컴포넌트로 만들자.
 - client 컴포넌트안에 server 컴포넌트가 import 되어 사용될 수 없다.
 → 권장되는 패턴은, server 컴포넌트를 client 컴포넌트의 props 로 전달하는 방법이다.
+
+- Next.js 의 Routing
+    - 모든 라우팅은 app 폴더 안에 있어야 한다.
+    - 라우팅이 매칭되는 파일이름은 page.js(page.tsx)등 'page'라는 이름이어야 한다.
